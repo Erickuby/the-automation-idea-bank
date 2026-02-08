@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Copy, Check, Cpu } from 'lucide-react';
 import { AutomationIdea } from '../types';
@@ -11,6 +12,7 @@ interface IdeaCardProps {
 
 const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
   const handleCopy = () => {
     let textToCopy = `${idea.idea}\n\nSolution: ${idea.solution}`;
@@ -44,7 +46,8 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.5) }}
       whileHover="hover"
-      className="relative group p-6 h-full flex flex-col justify-between overflow-hidden bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-2xl hover:shadow-cyan-100/40 hover:border-cyan-200 transition-all duration-300"
+      onClick={() => navigate(`/idea/${idea.id}`)}
+      className="relative group p-6 h-full flex flex-col justify-between overflow-hidden bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-2xl hover:shadow-cyan-100/40 hover:border-cyan-200 transition-all duration-300 cursor-pointer"
     >
       {/* Animated central glow effect */}
       <motion.div
@@ -89,7 +92,7 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
             {idea.idea}
           </h3>
 
-          <p className="mb-8 text-sm leading-relaxed text-slate-500 font-medium">
+          <p className="mb-8 text-sm leading-relaxed text-slate-500 font-medium line-clamp-3">
             {idea.solution}
           </p>
         </div>
