@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" alt="The Automation Idea Bank Banner" width="100%" />
   
-  <h1>The Automation Idea Bank</h1>
+  <h1>The Automation Business Blueprint</h1>
   
   <p>
     <strong>A curated collection of 200+ premium automation workflows and AI strategies.</strong>
@@ -19,7 +19,7 @@
 
 ## 🚀 Overview
 
-The **Automation Idea Bank** is a modern, high-performance web application designed to inspire developers, founders, and operations teams. It serves as a comprehensive directory of automation blueprints, helping users discover new ways to optimize their workflows using tools like n8n, Zapier, OpenAI, and more.
+The **Automation Business Blueprint** is a modern, high-performance web application designed to inspire developers, founders, and operations teams. It serves as a comprehensive directory of automation blueprints, helping users discover new ways to optimize their workflows using tools like n8n, Zapier, OpenAI, and more.
 
 ## ✨ Features
 

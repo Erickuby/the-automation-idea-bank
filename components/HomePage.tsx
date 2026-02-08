@@ -45,7 +45,7 @@ const HomePage: React.FC = () => {
                         </div>
                         <div>
                             <span className="text-sm font-bold text-slate-900 block leading-tight">
-                                {filteredIdeas.length} Active Automations
+                                {filteredIdeas.length} Proven Business Models
                             </span>
                             <span className="text-xs text-slate-500 font-medium">Curated for high-performance teams</span>
                         </div>
@@ -88,7 +88,7 @@ const HomePage: React.FC = () => {
                     <a href="#" className="text-slate-400 hover:text-cyan-600 transition-colors text-sm font-bold">API Reference</a>
                 </div>
                 <p className="text-slate-400 text-sm font-medium">
-                    &copy; 2025 The Automation Idea Bank. Built for engineers and visionaries.
+                    &copy; 2025 The Automation Business Blueprint. Built for engineers and visionaries.
                 </p>
             </footer>
         </div>
