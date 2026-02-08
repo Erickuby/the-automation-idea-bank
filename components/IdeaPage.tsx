@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, Target, Rocket, BarChart3, Bot, ChevronRight, Copy, Check } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Target, Rocket, BarChart3, Bot, ChevronRight, Copy, Check, ArrowUp, Lightbulb, Workflow, Sparkles } from 'lucide-react';
 import { automationData } from '../data';
-import { getPlaybookSteps } from '../playbookData';
+import { getPlaybookSteps, getDetailedIdeaContent } from '../playbookData';
 
 const IdeaPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const idea = automationData.find(i => i.id === id);
     const [copiedStep, setCopiedStep] = useState<number | null>(null);
+    const [copiedPrompt, setCopiedPrompt] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 400) {
+                setShowScrollTop(true);
+            } else {
+                setShowScrollTop(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     if (!idea) {
         return (
@@ -22,6 +41,7 @@ const IdeaPage: React.FC = () => {
     }
 
     const steps = getPlaybookSteps(idea);
+    const detailedContent = getDetailedIdeaContent(idea);
 
     const handleCopyStep = (stepNumber: number, stepData: any) => {
         // Format the step data for copying
@@ -46,6 +66,12 @@ outcome: ${stepData.outcome || ''}
         setTimeout(() => setCopiedStep(null), 2000);
     };
 
+    const handleCopyPrompt = () => {
+        navigator.clipboard.writeText(detailedContent.aiPrompt);
+        setCopiedPrompt(true);
+        setTimeout(() => setCopiedPrompt(false), 2000);
+    };
+
     const getStepIcon = (index: number) => {
         switch (index) {
             case 0: return <Rocket className="w-6 h-6" />;
@@ -57,9 +83,25 @@ outcome: ${stepData.outcome || ''}
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20 relative">
+            {/* Scroll to Top Button */}
+            <AnimatePresence>
+                {showScrollTop && (
+                    <motion.button
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        onClick={scrollToTop}
+                        className="fixed bottom-8 right-8 z-50 p-4 bg-slate-900 text-white rounded-full shadow-2xl hover:bg-cyan-600 transition-colors"
+                        title="Scroll to Top"
+                    >
+                        <ArrowUp className="w-6 h-6" />
+                    </motion.button>
+                )}
+            </AnimatePresence>
+
             {/* Navigation */}
-            <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+            <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center h-16">
                         <Link to="/" className="flex items-center gap-2 text-slate-500 hover:text-cyan-600 transition-colors">
@@ -83,12 +125,94 @@ outcome: ${stepData.outcome || ''}
                         <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-cyan-50 text-cyan-700 border border-cyan-100 mb-6">
                             {idea.niche}
                         </span>
-                        <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">
+                        <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 leading-tight">
                             {idea.idea}
                         </h1>
-                        <div className="prose prose-lg text-slate-600 leading-relaxed max-w-none">
-                            <h3 className="text-xl font-bold text-slate-800 mb-3">How to Get Started</h3>
-                            <p>{idea.solution}</p>
+
+                        <div className="grid gap-12">
+                            {/* Detailed Explanation */}
+                            <div>
+                                <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">
+                                    <Lightbulb className="w-5 h-5 text-yellow-500" />
+                                    How to Get Started
+                                </h3>
+                                <p className="text-lg text-slate-600 leading-relaxed mb-6">
+                                    {detailedContent.description}
+                                </p>
+
+                                {/* Benefits Grid */}
+                                <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                                    {detailedContent.benefits.map((benefit, i) => (
+                                        <div key={i} className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                            <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                            <span className="text-slate-700 font-medium text-sm">{benefit}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Workflow Section */}
+                            <div>
+                                <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-2">
+                                    <Workflow className="w-5 h-5 text-cyan-600" />
+                                    Automation Workflow
+                                </h3>
+                                <div className="space-y-4 relative before:absolute before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-200">
+                                    {detailedContent.workflow.map((flow, i) => {
+                                        const [trigger, action] = flow.split(':');
+                                        return (
+                                            <div key={i} className="relative flex gap-6 items-start">
+                                                <div className="z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white border-2 border-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-sm shadow-sm">
+                                                    {i + 1}
+                                                </div>
+                                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-1">
+                                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                                        {trigger ? trigger.trim() : 'Step'}
+                                                    </span>
+                                                    <span className="text-slate-700 font-medium">
+                                                        {action ? action.trim() : flow}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* AI Prompt Section */}
+                            <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 md:p-8 rounded-3xl text-white relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/20 rounded-full blur-3xl -mr-10 -mt-10" />
+
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+                                    <div>
+                                        <h3 className="flex items-center gap-2 text-xl font-bold text-white mb-2">
+                                            <Sparkles className="w-5 h-5 text-cyan-400" />
+                                            Build this with AI
+                                        </h3>
+                                        <p className="text-slate-400 text-sm">Copy this prompt into ChatGPT/Claude to start building.</p>
+                                    </div>
+                                    <button
+                                        onClick={handleCopyPrompt}
+                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/10 transition-all backdrop-blur-sm"
+                                    >
+                                        {copiedPrompt ? (
+                                            <>
+                                                <Check className="w-4 h-4 text-emerald-400" />
+                                                Copied Prompt
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="w-4 h-4" />
+                                                Copy Prompt
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+
+                                <div className="bg-black/30 p-4 rounded-xl font-mono text-xs md:text-sm text-slate-300 leading-relaxed overflow-x-auto border border-white/5">
+                                    <pre className="whitespace-pre-wrap">{detailedContent.aiPrompt}</pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
@@ -148,7 +272,7 @@ outcome: ${stepData.outcome || ''}
                                 </div>
 
                                 {/* Step Header */}
-                                <div className="flex items-start gap-4 mb-6 pr-24"> {/* Added padding-right to avoid overlap with copy button */}
+                                <div className="flex items-start gap-4 mb-6 pr-24">
                                     <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
                                         {getStepIcon(index)}
                                     </div>

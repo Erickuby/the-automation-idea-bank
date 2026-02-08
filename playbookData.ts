@@ -12,6 +12,108 @@ export interface PlaybookStep {
     outcome?: string;
 }
 
+export interface DetailedContent {
+    description: string;
+    benefits: string[];
+    workflow: string[];
+    aiPrompt: string;
+}
+
+export const getDetailedIdeaContent = (idea: AutomationIdea): DetailedContent => {
+    // Niche-specific templates
+    const getNicheContent = (niche: string) => {
+        switch (niche) {
+            case 'Content Creation and Editing':
+                return {
+                    benefits: [
+                        "Reduce production time by 80% using AI-driven editing and scripting.",
+                        "Maintain consistent publishing capability without burnout.",
+                        "Scale to multiple platforms (YouTube, TikTok, IG) instantly from one source.",
+                        "Lower barrier to entry for high-quality video/text production."
+                    ],
+                    workflow: [
+                        "Trigger: New raw footage/audio uploaded to cloud storage.",
+                        "Process: AI transcribes audio and identifies key highlights.",
+                        "Edit: AI tool cuts clips, adds captions, and reframes for vertical video.",
+                        "Review: Founder approves drafts.",
+                        "Publish: Automation posts to all social platforms simultaneously."
+                    ]
+                };
+            case 'Productivity and Project Management':
+                return {
+                    benefits: [
+                        "Eliminate manual data entry and repetitive admin tasks.",
+                        "Ensure 100% data accuracy by removing human error.",
+                        "Free up team bandwidth for strategic, creative work.",
+                        "Centralize information automatically from disparate tools."
+                    ],
+                    workflow: [
+                        "Trigger: New task/email/form submission received.",
+                        "Process: AI categorizes urgency and extracts key data fields.",
+                        "Action: Data is synced to Project Management tool (Notion/ClickUp).",
+                        "Notify: Relevant team member is pinged on Slack with a summary.",
+                        "Follow-up: AI drafts a status update email for the client."
+                    ]
+                };
+            case 'Marketing and Advertising':
+                return {
+                    benefits: [
+                        "Personalize outreach at scale (1000s of contacts vs 10s).",
+                        "Optimize ad spend in real-time based on performance data.",
+                        "Automate lead nurturing to increase conversion rates.",
+                        "Generate infinite creative variations for A/B testing."
+                    ],
+                    workflow: [
+                        "Trigger: New lead captured (website form or LinkedIn).",
+                        "Enrich: AI tools scrape public data to build a lead profile.",
+                        "Segment: Lead is scored and tagged in CRM.",
+                        "Engage: Personalized email sequence triggered based on score.",
+                        "Analyze: Interaction data feeds back into the scoring model."
+                    ]
+                };
+            // Default fallback for other niches
+            default:
+                return {
+                    benefits: [
+                        "Automate time-consuming manual processes.",
+                        "Increase operational efficiency and reduce costs.",
+                        "Scale service delivery without adding headcount.",
+                        "Provide 24/7 service availability."
+                    ],
+                    workflow: [
+                        "Trigger: User input or scheduled event.",
+                        "Process: AI analyzes input and determines intent.",
+                        "Action: Automated system executes the task (generation/sorting/replying).",
+                        "Output: Result is delivered to the user or database.",
+                        "Loop: System learns from feedback to improve future accuracy."
+                    ]
+                };
+        }
+    };
+
+    const nicheContent = getNicheContent(idea.niche);
+
+    // Construct a powerful prompt for the user to give to an AI
+    const prompt = `
+I want to build a business based on this idea: "${idea.idea}".
+Niche: ${idea.niche}
+Core Value Proposition: ${idea.solution}
+
+Please act as a Senior Product Manager and Automation Engineer. Help me:
+1. Refine the exact feature set for an MVP.
+2. Design the technical architecture using no-code tools (n8n, Make, Airtable) and AI APIs (OpenAI, Anthropic).
+3. Create a detailed user flow diagram.
+4. List the exact prompts I should use to configure the AI nodes.
+`.trim();
+
+    return {
+        description: idea.solution, // We use the existing solution as the core description
+        benefits: nicheContent.benefits,
+        workflow: nicheContent.workflow,
+        aiPrompt: prompt
+    };
+};
+
 export const getPlaybookSteps = (idea: AutomationIdea): PlaybookStep[] => [
     {
         stepNumber: 1,
