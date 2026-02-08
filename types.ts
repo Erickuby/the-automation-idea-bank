@@ -6,7 +6,7 @@ export interface AutomationIdea {
   idea: string;
   niche: string;
   solution: string;
-  tools: string[];
+  tools?: string[];
 }
 
 export type NicheType = typeof NICHES[number];

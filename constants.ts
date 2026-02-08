@@ -1,13 +1,13 @@
 export const NICHES = [
   'All',
-  'Dev',
-  'Agency',
-  'Real Estate',
-  'HR',
-  'Marketing',
-  'Sales',
-  'Operations',
-  'Personal',
-  'Product Management',
-  'Founder'
+  'Content Creation and Editing',
+  'Productivity and Project Management',
+  'Marketing and Advertising',
+  'Education and Training',
+  'Data and Analytics Services',
+  'Gaming and Interactive Media',
+  'Customer Service and Virtual Assistance',
+  'Health and Wellness',
+  'Finance and Investing',
+  'Travel and Hospitality'
 ] as const;

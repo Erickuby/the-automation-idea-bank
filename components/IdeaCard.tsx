@@ -13,7 +13,10 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    const textToCopy = `${idea.idea}\n\nSolution: ${idea.solution}\n\nTools: ${idea.tools.join(', ')}`;
+    let textToCopy = `${idea.idea}\n\nSolution: ${idea.solution}`;
+    if (idea.tools && idea.tools.length > 0) {
+      textToCopy += `\n\nTools: ${idea.tools.join(', ')}`;
+    }
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -21,15 +24,16 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
 
   const getNicheStyles = (niche: string) => {
     switch (niche.toLowerCase()) {
-      case 'dev': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'agency': return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'real estate': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-      case 'hr': return 'bg-pink-50 text-pink-700 border-pink-200';
-      case 'marketing': return 'bg-orange-50 text-orange-700 border-orange-200';
-      case 'sales': return 'bg-cyan-50 text-cyan-700 border-cyan-200';
-      case 'operations': return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'product management': return 'bg-indigo-50 text-indigo-700 border-indigo-200';
-      case 'founder': return 'bg-rose-50 text-rose-700 border-rose-200';
+      case 'content creation and editing': return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'marketing and advertising': return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 'productivity and project management': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'education and training': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'data and analytics services': return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+      case 'gaming and interactive media': return 'bg-pink-50 text-pink-700 border-pink-200';
+      case 'customer service and virtual assistance': return 'bg-cyan-50 text-cyan-700 border-cyan-200';
+      case 'health and wellness': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'finance and investing': return 'bg-slate-50 text-slate-700 border-slate-200';
+      case 'travel and hospitality': return 'bg-rose-50 text-rose-700 border-rose-200';
       default: return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
@@ -45,8 +49,8 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
       {/* Animated central glow effect */}
       <motion.div
         variants={{
-          hover: { 
-            scale: 2, 
+          hover: {
+            scale: 2,
             opacity: 1,
             transition: { duration: 0.6, ease: "easeOut" }
           }
@@ -57,8 +61,8 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
 
       {/* Decorative corner glow */}
       <div className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity z-0" />
-      
-      <motion.div 
+
+      <motion.div
         variants={{
           hover: { y: -6, scale: 1.01 }
         }}
@@ -66,10 +70,10 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
       >
         <div>
           <div className="flex items-start justify-between mb-5">
-            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getNicheStyles(idea.niche)}`}>
+            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getNicheStyles(idea.niche)} whitespace-normal text-center`}>
               {idea.niche}
             </span>
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleCopy();
@@ -84,22 +88,24 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
           <h3 className="mb-4 text-lg font-bold text-slate-900 group-hover:text-cyan-700 transition-colors leading-tight">
             {idea.idea}
           </h3>
-          
+
           <p className="mb-8 text-sm leading-relaxed text-slate-500 font-medium">
             {idea.solution}
           </p>
         </div>
 
-        <div className="mt-auto">
-          <div className="flex flex-wrap gap-2 pt-5 border-t border-slate-50">
-            {idea.tools.map((tool) => (
-              <span key={tool} className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold text-slate-600 bg-slate-100/50 rounded-lg border border-slate-200/60">
-                <Cpu className="w-3 h-3 text-cyan-600" />
-                {tool}
-              </span>
-            ))}
+        {idea.tools && idea.tools.length > 0 && (
+          <div className="mt-auto">
+            <div className="flex flex-wrap gap-2 pt-5 border-t border-slate-50">
+              {idea.tools.map((tool) => (
+                <span key={tool} className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold text-slate-600 bg-slate-100/50 rounded-lg border border-slate-200/60">
+                  <Cpu className="w-3 h-3 text-cyan-600" />
+                  {tool}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </motion.div>
     </motion.div>
   );
