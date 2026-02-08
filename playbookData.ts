@@ -1,3 +1,5 @@
+import { AutomationIdea } from './types';
+
 export interface PlaybookStep {
     stepNumber: number;
     title: string;
@@ -10,13 +12,14 @@ export interface PlaybookStep {
     outcome?: string;
 }
 
-export const PLAYBOOK_STEPS: PlaybookStep[] = [
+export const getPlaybookSteps = (idea: AutomationIdea): PlaybookStep[] => [
     {
         stepNumber: 1,
         title: "Ship the Product",
         post: "1. opus 4.6 / codex 5.3 → ship the product (core features, backend, auth, infra)",
         meaning: [
-            "Use engineering tools (AI coding assistants etc.) to build a usable product:",
+            `Use engineering tools to build a usable Minimum Viable Product (MVP) tailored for the **${idea.niche}** market.`,
+            `Focus solely on the core value proposition: **${idea.idea}**.`,
             "Clear problem it solves.",
             "Core features implemented.",
             "Basic UX is good enough.",
@@ -26,15 +29,15 @@ export const PLAYBOOK_STEPS: PlaybookStep[] = [
             {
                 title: "Define one simple offer",
                 points: [
-                    "Who is it for?",
-                    "What painful problem do you solve?",
+                    `Who is it for? Identify your specific sub-niche within **${idea.niche}**.`,
+                    `What painful problem do you solve? (e.g., "${idea.solution.split('.')[0]}...")`,
                     "What outcome can you promise?"
                 ]
             },
             {
                 title: "Build only what’s needed for that promise",
                 points: [
-                    "One core workflow (e.g., generate social posts, manage tasks, send emails).",
+                    `One core workflow: Implement the primary automation for **${idea.idea}**.`,
                     "Minimal onboarding and payment (Stripe, Gumroad, etc.).",
                     "Error handling and basic analytics (e.g., PostHog, Plausible)."
                 ]
@@ -54,28 +57,31 @@ export const PLAYBOOK_STEPS: PlaybookStep[] = [
         title: "Design the Marketing Playbook",
         post: "2. claude code → design the playbook (content formats, hook templates, lead magnets, reply rules, tone of voice, weekly experiments)",
         meaning: [
-            "Before posting, design a repeatable content and growth system.",
+            `Before posting about **${idea.idea}**, design a repeatable content and growth system.`,
             "Treat this like product design: a spec for how your marketing works."
         ],
         implementation: [
             {
                 title: "Content Formats",
                 points: [
-                    "Choose 2–3 repeatable types (e.g., 'Before/after' case studies, 'X mistakes' threads, 'Build in public' updates).",
+                    `Create "Before/After" case studies showing the manual way vs. your **${idea.idea}** automation.`,
+                    `Write "X Mistakes" threads relevant to **${idea.niche}** professionals.`,
                     "Define formats for LinkedIn/YouTube (e.g., '60-sec tutorial', 'idea teardown')."
                 ]
             },
             {
                 title: "Hook Templates",
                 points: [
-                    "Write 10–20 starting lines (e.g., 'You’re doing X when you should be doing Y…', 'Steal my system for [result] in 10 minutes').",
+                    `"You’re doing ${idea.niche} wrong if you're still..."`,
+                    `"I saved 10 hours a week on ${idea.niche.toLowerCase()} tasks with this..."`,
+                    `"Steal my system for ${idea.idea} in 10 minutes."`,
                     "Keep them in a doc so AI can plug in new angles."
                 ]
             },
             {
                 title: "Lead Magnets",
                 points: [
-                    "Free assets (PDF, Notion template, checklist) to collect emails.",
+                    `Create a "Ultimate Guide to Automating ${idea.niche}" PDF or Notion template.`,
                     "Each main content format should point to one of these."
                 ]
             },
@@ -94,7 +100,7 @@ export const PLAYBOOK_STEPS: PlaybookStep[] = [
         title: "Run the Playbook 24/7 with Automation",
         post: "3. openclaw → run the playbook 24/7 (ads, post drafts, build free tools, repurpose content, create campaigns, reply to comments + dms, send follow-ups, queue experiments)",
         meaning: [
-            "Use tools/AI/automation to execute that playbook constantly, not just when you remember.",
+            `Use tools/AI/automation to execute your **${idea.idea}** marketing constantly, not just when you remember.`,
             "Think of this as your always-on marketing engine."
         ],
         implementation: [
@@ -130,7 +136,7 @@ export const PLAYBOOK_STEPS: PlaybookStep[] = [
         title: "Dashboards and Doubling Down",
         post: "4. dashboards → decide what to double down on (saves, shares, replies, clicks, signups)",
         meaning: [
-            "You need measurement to know which parts of the system work, so you can do more of them."
+            `Measure which **${idea.niche}** topics resonate most so you can do more of them.`
         ],
         implementation: [
             {

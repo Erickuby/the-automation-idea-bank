@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, Target, Rocket, BarChart3, Bot, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, CheckCircle2, Target, Rocket, BarChart3, Bot, ChevronRight, Copy, Check } from 'lucide-react';
 import { automationData } from '../data';
-import { PLAYBOOK_STEPS } from '../playbookData';
+import { getPlaybookSteps } from '../playbookData';
 
 const IdeaPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const idea = automationData.find(i => i.id === id);
+    const [copiedStep, setCopiedStep] = useState<number | null>(null);
 
     if (!idea) {
         return (
@@ -19,6 +20,31 @@ const IdeaPage: React.FC = () => {
             </div>
         );
     }
+
+    const steps = getPlaybookSteps(idea);
+
+    const handleCopyStep = (stepNumber: number, stepData: any) => {
+        // Format the step data for copying
+        const textToCopy = `
+Step ${stepData.stepNumber}: ${stepData.title}
+${stepData.post}
+
+THE STRATEGY:
+${stepData.meaning.join('\n')}
+
+HOW TO IMPLEMENT:
+${stepData.implementation.map((impl: any) => `
+${impl.title}:
+${impl.points.map((p: string) => `- ${p}`).join('\n')}
+`).join('')}
+
+outcome: ${stepData.outcome || ''}
+    `.trim();
+
+        navigator.clipboard.writeText(textToCopy);
+        setCopiedStep(stepNumber);
+        setTimeout(() => setCopiedStep(null), 2000);
+    };
 
     const getStepIcon = (index: number) => {
         switch (index) {
@@ -70,22 +96,59 @@ const IdeaPage: React.FC = () => {
                 {/* Playbook Section */}
                 <div className="mb-8">
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Execution Playbook</h2>
-                    <p className="text-slate-500 mb-8 max-w-2xl">Use this universal 4-step framework to turn this idea into a profitable business.</p>
+                    <p className="text-slate-500 mb-8 max-w-2xl">
+                        Customized 4-step framework to launch <strong>{idea.idea}</strong>.
+                    </p>
                 </div>
 
                 <div className="space-y-8">
-                    {PLAYBOOK_STEPS.map((step, index) => (
+                    {steps.map((step, index) => (
                         <motion.div
                             key={step.stepNumber}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-50px" }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
+                            className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden relative group"
                         >
                             <div className="p-8">
+                                {/* Copy Button */}
+                                <div className="absolute top-6 right-6 z-20">
+                                    <button
+                                        onClick={() => handleCopyStep(step.stepNumber, step)}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-cyan-50 text-slate-400 hover:text-cyan-600 rounded-lg border border-slate-100 hover:border-cyan-200 transition-all text-xs font-bold uppercase tracking-wider"
+                                        title="Copy step to clipboard"
+                                    >
+                                        <AnimatePresence mode='wait'>
+                                            {copiedStep === step.stepNumber ? (
+                                                <motion.div
+                                                    key="check"
+                                                    initial={{ scale: 0.5, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    exit={{ scale: 0.5, opacity: 0 }}
+                                                    className="flex items-center gap-1.5 text-emerald-600"
+                                                >
+                                                    <Check className="w-3.5 h-3.5" />
+                                                    <span>Copied</span>
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="copy"
+                                                    initial={{ scale: 0.5, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    exit={{ scale: 0.5, opacity: 0 }}
+                                                    className="flex items-center gap-1.5"
+                                                >
+                                                    <Copy className="w-3.5 h-3.5" />
+                                                    <span>Copy Step</span>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </button>
+                                </div>
+
                                 {/* Step Header */}
-                                <div className="flex items-start gap-4 mb-6">
+                                <div className="flex items-start gap-4 mb-6 pr-24"> {/* Added padding-right to avoid overlap with copy button */}
                                     <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
                                         {getStepIcon(index)}
                                     </div>
@@ -105,7 +168,9 @@ const IdeaPage: React.FC = () => {
                                     <h4 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">The Strategy</h4>
                                     <ul className="space-y-2">
                                         {step.meaning.map((m, i) => (
-                                            <li key={i} className="text-slate-700 md:text-lg leading-relaxed">{m}</li>
+                                            <li key={i} className="text-slate-700 md:text-lg leading-relaxed">
+                                                <span dangerouslySetInnerHTML={{ __html: m.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>') }} />
+                                            </li>
                                         ))}
                                     </ul>
                                 </div>
@@ -124,7 +189,9 @@ const IdeaPage: React.FC = () => {
                                                     {impl.points.map((p, j) => (
                                                         <li key={j} className="flex items-start gap-2 text-sm text-slate-600">
                                                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
-                                                            <span className="leading-relaxed">{p}</span>
+                                                            <span className="leading-relaxed">
+                                                                <span dangerouslySetInnerHTML={{ __html: p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>') }} />
+                                                            </span>
                                                         </li>
                                                     ))}
                                                 </ul>
